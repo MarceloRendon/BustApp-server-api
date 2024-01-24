@@ -67,5 +67,5 @@ app.get('/paradero/:codigoParadero', async (req, res) => {
 // }))
 
 
-app.listen(5005, () => console.log('SERVIDOR LEVANTADO'))
+app.listen(5005, () => console.log('SERVIDOR LEVANTADO en http://localhost:5005/paradero/PC131'))
 
