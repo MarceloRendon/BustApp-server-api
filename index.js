@@ -1,6 +1,6 @@
 const express = require('express')
 const axios = require('axios');
-
+const routerApi = require("./routes")
 const app = express()
 
 //app.get('/productos', (req, res) => res.send('<h1>HOLA! endpoint productos</h1>'))
@@ -19,46 +19,67 @@ const Coaster = require('./Models/Coaster.model')
 const cors = require('cors')
 app.use(cors())
 
-// Routting
-app.get('/api/coaster', (req, res) => {
-    Coaster
-        .find()
-        .then(allCoasters => res.json(allCoasters))
+// Convertir body a json
+app.use (express.json()) //  Recibir datos con content-type app/json
+app.use(express.urlencoded({extended: true})) // Convertir cada propiedad de x-www-form-urlencoded a un objeto json
+
+// Rutas
+
+routerApi(app);
+
+app.get("/", (req, res) =>{
+  res.send({
+      message: "Hello World with Express"}
+      );
+});
+
+app.get("/probando", (req, res) => {
+  return res.status(200).send({
+      message: "Probando el endpoint"
+  })
 })
 
-app.get('/api/details/:coaster_id', async (req, res) => {
-    const {coaster_id} = req.params
 
-    Coaster
-        .findById(coaster_id)
-        .then(coaster => res.json(coaster))
-})
+// // Routting
+// app.get('/api/coaster', (req, res) => {
+//     Coaster
+//         .find()
+//         .then(allCoasters => res.json(allCoasters))
+// })
 
-//
-app.get('/paradero/:codigoParadero', async (req, res) => {
-    try {
-      const codigoParadero = req.params.codigoParadero;
-      const apiUrl = `https://api.xor.cl/red/bus-stop/${codigoParadero}`;
+// app.get('/api/details/:coaster_id', async (req, res) => {
+//     const {coaster_id} = req.params
+
+//     Coaster
+//         .findById(coaster_id)
+//         .then(coaster => res.json(coaster))
+// })
+
+
+// app.get('/paradero/:codigoParadero', async (req, res) => {
+//     try {
+//       const codigoParadero = req.params.codigoParadero;
+//       const apiUrl = `https://api.xor.cl/red/bus-stop/${codigoParadero}`;
   
-      // Realizar la solicitud a la API externa para obtener la información del paradero
-      const response = await axios.get(apiUrl);
+//       // Realizar la solicitud a la API externa para obtener la información del paradero
+//       const response = await axios.get(apiUrl);
   
-      // Verificar si la solicitud fue exitosa
-      if (response.status === 200) {
-        // Extraer los datos del paradero de la respuesta
-        const paraderoInfo = response.data;
+//       // Verificar si la solicitud fue exitosa
+//       if (response.status === 200) {
+//         // Extraer los datos del paradero de la respuesta
+//         const paraderoInfo = response.data;
   
-        // Enviar los datos del paradero como respuesta
-        res.status(200).json(paraderoInfo);
-      } else {
-        // Si hay algún problema con la solicitud a la API externa
-        res.status(response.status).json({ error: 'Error al obtener información del paradero' });
-      }
-    } catch (error) {
-      // Manejar errores de cualquier solicitud o proceso
-      res.status(500).json({ error: 'Error interno del servidor' });
-    }
-})
+//         // Enviar los datos del paradero como respuesta
+//         res.status(200).json(paraderoInfo);
+//       } else {
+//         // Si hay algún problema con la solicitud a la API externa
+//         res.status(response.status).json({ error: 'Error al obtener información del paradero' });
+//       }
+//     } catch (error) {
+//       // Manejar errores de cualquier solicitud o proceso
+//       res.status(500).json({ error: 'Error interno del servidor' });
+//     }
+// })
 
 // app.get('/productos', (req, res) => res.json({
 //     message: 'Hola!',
@@ -67,5 +88,7 @@ app.get('/paradero/:codigoParadero', async (req, res) => {
 // }))
 
 
-app.listen(5005, () => console.log('SERVIDOR LEVANTADO en http://localhost:5005/paradero/PC131'))
-
+// Crear servidor y escuchar peticiones http
+app.listen(5005, () => {
+  console.log(`Servidor corriendo en el puerto http://localhost:5005`);
+})
